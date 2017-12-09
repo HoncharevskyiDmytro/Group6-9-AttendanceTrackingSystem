@@ -1,0 +1,19 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="guestbook">
+        <xs:complexType>
+	    	<xs:sequence>
+	    		<xs:element name="greeting" type = "greetingType" maxOccurs = "unbounded"/>
+       		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    <xs:complexType name = "greetingType">
+        <xs:sequence>
+	        <xs:element name="id" type="xs:long"/>
+	        <xs:element name="author" type="xs:string"/>
+	        <xs:element name="email" type="xs:string"/>
+	        <xs:element name="content" type="xs:string"/>
+	        <xs:element name="date" type="xs:date"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
+	

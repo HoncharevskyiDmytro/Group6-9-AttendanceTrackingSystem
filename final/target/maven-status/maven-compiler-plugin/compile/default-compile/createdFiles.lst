@@ -1,0 +1,10 @@
+com/example/guestbook/GuestbookResource.class
+com/example/guestbook/HardGreetingResource.class
+firstSteps/FirstStepsApplication.class
+firstSteps/HelloWorldResource.class
+com/example/guestbook/Greeting.class
+com/example/guestbook/OfyHelper.class
+com/example/guestbook/GreetingApplication.class
+com/example/guestbook/GreetingResource.class
+com/example/guestbook/Guestbook.class
+com/example/guestbook/SignGuestbookServlet.class
