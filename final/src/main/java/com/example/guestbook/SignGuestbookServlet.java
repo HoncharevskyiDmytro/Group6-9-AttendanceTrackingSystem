@@ -41,7 +41,7 @@ import com.googlecode.objectify.ObjectifyService;
 /**
  * Form Handling Servlet
  * Most of the action for this sample is in webapp/guestbook.jsp, which displays the
- * {@link Greeting}'s. This servlet has one method
+ * {@link Group}'s. This servlet has one method
  * {@link #doPost(<#HttpServletRequest req#>, <#HttpServletResponse resp#>)} which takes the form
  * data and saves it.
  */
@@ -50,41 +50,42 @@ public class SignGuestbookServlet extends HttpServlet {
   // Process the http POST of the form
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    Greeting greeting;
-    
+    Group greeting;
+    Student student;
     
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();  // Find out who the user is.
 
+    String groupID = req.getParameter("groupid");
     String guestbookName = req.getParameter("guestbookName");
-    String content = req.getParameter("content");
+    String selectedGroup = req.getParameter("selectedGroup");
+    String instructor = req.getParameter("instructor");
+    String place = req.getParameter("place");
+    String time = req.getParameter("time");
+    if(groupID != "") {
+	    if (instructor != "" || place != "" || time != "") {
+	      greeting = new Group(guestbookName, groupID, instructor, place, time);
+		  ObjectifyService.ofy().save().entity(greeting).now();
+	    } else {
+	      greeting = new Group(guestbookName, groupID);
+		  ObjectifyService.ofy().save().entity(greeting).now();
+	    }
+    }
     if (user != null) {
-      greeting = new Greeting(guestbookName, content, user.getUserId(), user.getEmail());
-    } else {
-      greeting = new Greeting(guestbookName, content);
+        if(selectedGroup != "") {
+			student = new Student(guestbookName, user.getEmail(), user.getUserId(), selectedGroup);
+	        ObjectifyService.ofy().save().entity(student).now();
+        }
+        else {
+			student = new Student(guestbookName, user.getEmail(), user.getUserId());
+	        ObjectifyService.ofy().save().entity(student).now();
+        }
     }
 
     // Use Objectify to save the greeting and now() is used to make the call synchronously as we
     // will immediately get a new page using redirect and we want the data to be present.
     
-    ObjectifyService.ofy().save().entity(greeting).now();
-    
-    com.googlecode.objectify.Key<Guestbook> theBook = com.googlecode.objectify.Key.create(Guestbook.class, guestbookName);
-    List<Greeting> greetings = ObjectifyService.ofy()
-    		 .load()
-    		 .type(Greeting.class) // We want only Greetings
-    		 .ancestor(theBook) // Anyone in this book
-    		 .order("date") // the oldest will be first
-    		 .list();
-    if(greetings.size() > 5){
-    	 for (Greeting old_greeting : greetings) {
-		 ObjectifyService.ofy().delete().entity(old_greeting).now();
-		 // we can break after deleting the oldest element
-		 break;
-		 }
-    	 }
-
-    resp.sendRedirect("/guestbook.jsp?guestbookName=" + guestbookName);
+    resp.sendRedirect("/guestbook.jsp?guestbookName=" + guestbookName + selectedGroup);
   }
 }
 //[END all]

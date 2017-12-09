@@ -5,19 +5,18 @@
 
 <!-- [START standard_mappings] -->
     <servlet>
-             <servlet-name>RestletServlet</servlet-name>
-             <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
-             <init-param>
-                     <param-name>org.restlet.application</param-name>
-                     <param-value>com.example.guestbook.GreetingApplication  </param-value>
-             </init-param>
+      <servlet-name>sign</servlet-name>
+      <servlet-class>com.example.guestbook.SignGuestbookServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>RestletServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+      <servlet-name>sign</servlet-name>
+      <url-pattern>/sign</url-pattern>
     </servlet-mapping>
 
+    <welcome-file-list>
+        <welcome-file>guestbook.jsp</welcome-file>
+    </welcome-file-list>
 <!-- [END standard_mappings] -->
 
 <!-- [START Objectify] -->
