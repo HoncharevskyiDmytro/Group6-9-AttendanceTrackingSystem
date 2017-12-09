@@ -85,7 +85,7 @@ public class SignGuestbookServlet extends HttpServlet {
     // Use Objectify to save the greeting and now() is used to make the call synchronously as we
     // will immediately get a new page using redirect and we want the data to be present.
     
-    resp.sendRedirect("/guestbook.jsp?guestbookName=" + guestbookName + selectedGroup);
+    resp.sendRedirect("/guestbook.jsp?guestbookName=" + guestbookName);
   }
 }
 //[END all]

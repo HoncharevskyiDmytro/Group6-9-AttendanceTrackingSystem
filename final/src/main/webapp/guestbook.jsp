@@ -17,7 +17,6 @@
 <%@ page  import="com.google.appengine.api.datastore.Query.FilterOperator" %>
 <%@ page  import="com.google.appengine.api.datastore.Query.FilterPredicate" %>
 <%@ page  import="com.google.appengine.api.datastore.Query.SortDirection" %>
-
 <%@ page import="com.googlecode.objectify.ObjectifyService" %>
 <%-- //[END imports]--%>
 
@@ -55,10 +54,6 @@
 <p>Hello, ${fn:escapeXml(user.nickname)}! (You can
     <a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">sign out</a>.)</p>
 <%
-		String e = user.getEmail();
-		//Student curStudent = ObjectifyService.ofy().load().type(Student.class).id(user.getEmail()).now();
-		//Student curStudent = ObjectifyService.ofy().load().type(Student.class).ancestor(theBook).filter("student_email", e).last().now();
-		
      List<Student> curStudents = ObjectifyService.ofy()
           .load()
           .type(Student.class) // We want only Groups
@@ -80,36 +75,25 @@
      }else{
 
             for (Student curStudent : curStudents) {    
-            	if(curStudent.groupid == user.getEmail()){
-                //pageContext.setAttribute("emailaddress", curStudent.student_email);
-                	//pageContext.setAttribute("cur_groupid", curStudent.groupid);
-
-
+                if(e.equals(curStudent.student_email)){ 
 			    	if(curStudent.groupid != null){
-			          pageContext.setAttribute("cur_groupid", curStudent.groupid);
-			    	
+			          pageContext.setAttribute("cur_groupid", curStudent.groupid); 	
     %>
 <p>You are in Group ${fn:escapeXml(cur_groupid)}!</p>
-
     <%
-    	}
-    	else{
+                	}else{
     %>
 <p>You are not in any group!</p>
-
     <%
-    }
-}
-    }
-	
-      }
-
+                    }
+                }
+            }
+        }
     } else {
 %>
 <p>Hello!
     <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Sign in</a>
     to include your name with greetings you post.</p>
-
 <%
     }
 
@@ -136,36 +120,10 @@
 <blockquote>Instructor '${fn:escapeXml(group_instructor)}'</blockquote>
 <blockquote>Exercise Time '${fn:escapeXml(group_time)}'</blockquote>
 <blockquote>Exercise Place '${fn:escapeXml(group_place)}'</blockquote>
-
-<%
-        }      
-}
-
-      List<Student> students = ObjectifyService.ofy()
-          .load()
-          .type(Student.class) // We want only Groups
-          .ancestor(theBook)    // Anyone in this book    // Most recent first - date is indexed.            // Only show 5 of them.
-          .list();
-    // Run an ancestor query to ensure we see the most up-to-date
-    // view of the Groups belonging to the selected Guestbook.
-    if (students.isEmpty()) {
-%>
-<p>Lecture '${fn:escapeXml(guestbookName)}' has no students.</p>
-<%
-    }else{
-
-            for (Student student : students) {    
-                pageContext.setAttribute("emailaddress", student.student_email);
-                pageContext.setAttribute("g", student.groupid);
-
-%>
-<p>emailaddress '${fn:escapeXml(emailaddress)}':</p>
-<p>g '${fn:escapeXml(g)}':</p>
 <%
         }      
 }
 %>
-    
 
 <form action="/sign" method="post">
     <div><p>GroupID</p><textarea name="groupid" rows="3" cols="60"></textarea></div>

@@ -59,6 +59,9 @@
 		//Student curStudent = ObjectifyService.ofy().load().type(Student.class).id(user.getEmail()).now();
 		//Student curStudent = ObjectifyService.ofy().load().type(Student.class).ancestor(theBook).filter("student_email", e).last().now();
 		
+com.googlecode.objectify.Key<Student> StuKey = com.googlecode.objectify.Key.create(Student.class, user.getEmail());  
+
+
      List<Student> curStudents = ObjectifyService.ofy()
           .load()
           .type(Student.class) // We want only Groups
@@ -78,12 +81,19 @@
 
     <%   
      }else{
+    %>
+<p> find students!!</p>
 
+    <% 
             for (Student curStudent : curStudents) {    
-            	if(curStudent.groupid == user.getEmail()){
+            	//if(curStudent.student_email == user.getEmail()){
+                if(e.equals(curStudent.student_email)){
                 //pageContext.setAttribute("emailaddress", curStudent.student_email);
                 	//pageContext.setAttribute("cur_groupid", curStudent.groupid);
+    %>
+<p> find this student!!</p>
 
+    <% 
 
 			    	if(curStudent.groupid != null){
 			          pageContext.setAttribute("cur_groupid", curStudent.groupid);
@@ -160,7 +170,7 @@
 
 %>
 <p>emailaddress '${fn:escapeXml(emailaddress)}':</p>
-<p>g '${fn:escapeXml(g)}':</p>
+<p>group '${fn:escapeXml(g)}':</p>
 <%
         }      
 }
