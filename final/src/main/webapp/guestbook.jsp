@@ -34,6 +34,8 @@
 
     String guestbookName = request.getParameter("guestbookName");
     String selectedGroup = request.getParameter("selectedGroup");
+    int found = 0;
+    Student student;
     // Create the correct Ancestor key
     if (guestbookName == null) {
         guestbookName = "default";
@@ -65,16 +67,11 @@
 
 <p> ${fn:escapeXml(email)}!!</p>
     <%
-    if (curStudents.isEmpty()) {	       	
-    %>
-<p> query fail!!</p>
-    <%   
-     }else{
-
-            for (Student curStudent : curStudents) {    
-                if(user.getEmail().equals(curStudent.student_email)){ 
-			    	if(curStudent.groupid != null){
-			          pageContext.setAttribute("cur_groupid", curStudent.groupid); 	
+    if (!curStudents.isEmpty()) {
+        for (Student curStudent : curStudents) {    
+            if(user.getEmail().equals(curStudent.student_email)){ 
+		    	if(curStudent.groupid != null){
+		            pageContext.setAttribute("cur_groupid", curStudent.groupid); 	
     %>
 <p>You are in Group ${fn:escapeXml(cur_groupid)}!</p>
     <%
@@ -83,8 +80,17 @@
 <p>You are not in any group!</p>
     <%
                     }
+                    found = 1;
+                    break;
                 }
             }
+    }
+    if(found == 0){
+        student = new Student(guestbookName, user.getEmail(), user.getUserId());
+        ObjectifyService.ofy().save().entity(student).now();
+    %>
+<p>You are not in any group!</p>
+    <%
         }
     } else {
 %>

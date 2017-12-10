@@ -76,10 +76,6 @@ public class SignGuestbookServlet extends HttpServlet {
 			student = new Student(guestbookName, user.getEmail(), user.getUserId(), selectedGroup);
 	        ObjectifyService.ofy().save().entity(student).now();
         }
-        else {
-			student = new Student(guestbookName, user.getEmail(), user.getUserId());
-	        ObjectifyService.ofy().save().entity(student).now();
-        }
     }
 
     // Use Objectify to save the  and now() is used to make the call synchronously as we
