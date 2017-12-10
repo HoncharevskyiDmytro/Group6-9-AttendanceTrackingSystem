@@ -27,14 +27,15 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-
-
+import java.util.Observable;
+import java.util.Observer;
 
 import com.googlecode.objectify.ObjectifyService;
 
@@ -45,37 +46,21 @@ import com.googlecode.objectify.ObjectifyService;
  * {@link #doPost(<#HttpServletRequest req#>, <#HttpServletResponse resp#>)} which takes the form
  * data and saves it.
  */
-public class SignGuestbookServlet extends HttpServlet {
+public class SignGuestbookServlet extends HttpServlet{
 	
   // Process the http POST of the form
+   Model myModel   = new Model();
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    Group group;
-    Student student;
     
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();  // Find out who the user is.
 
-    String groupID = req.getParameter("groupid");
     String guestbookName = req.getParameter("guestbookName");
     String selectedGroup = req.getParameter("selectedGroup");
-    String instructor = req.getParameter("instructor");
-    String place = req.getParameter("place");
-    String time = req.getParameter("time");
-    if(!groupID.isEmpty()) {
-	    if (!instructor.isEmpty() || !place.isEmpty() || time.isEmpty()) {
-	      group = new Group(guestbookName, groupID, instructor, place, time);
-		  ObjectifyService.ofy().save().entity(group).now();
-	    } else {
-	      group = new Group(guestbookName, groupID);
-		  ObjectifyService.ofy().save().entity(group).now();
-	    }
-    }
-    if (user != null) {
-        if(selectedGroup != "") {
-			student = new Student(guestbookName, user.getEmail(), user.getUserId(), selectedGroup);
-	        ObjectifyService.ofy().save().entity(student).now();
-        }
+
+    if (user != null && selectedGroup != "" ) {
+		myModel.registerGroup(guestbookName, user, selectedGroup);
     }
 
     // Use Objectify to save the  and now() is used to make the call synchronously as we

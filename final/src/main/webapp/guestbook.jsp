@@ -8,6 +8,8 @@
 <%@ page import="com.example.guestbook.Group" %>
 <%@ page import="com.example.guestbook.Guestbook" %>
 <%@ page import="com.example.guestbook.Student" %>
+<%@ page import="com.example.guestbook.Model" %>
+<%@ page import="com.example.guestbook.Controller" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Key" %>
@@ -31,6 +33,12 @@
 <body>
 
 <%
+    
+    Model myModel   = new Model();
+    Controller myController = new Controller();
+    myController.addModel(myModel);
+    //myController.addView(myView);
+
 
     String guestbookName = request.getParameter("guestbookName");
     String selectedGroup = request.getParameter("selectedGroup");
@@ -50,90 +58,66 @@
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
     if (user != null) {
+        myController.initModel(guestbookName, user);
         pageContext.setAttribute("user", user);
 
 %>
 <p>Hello, ${fn:escapeXml(user.nickname)}! (You can
     <a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">sign out</a>.)</p>
-<%
-     List<Student> curStudents = ObjectifyService.ofy()
-          .load()
-          .type(Student.class) // We want only Groups
-          .ancestor(theBook)   // Anyone in this book    // Most recent first - date is indexed.            // Only show 5 of them.
-          .list();
-
-    pageContext.setAttribute("email", user.getEmail());	    
-%>
-
-<p> ${fn:escapeXml(email)}!!</p>
     <%
-    if (!curStudents.isEmpty()) {
-        for (Student curStudent : curStudents) {    
-            if(user.getEmail().equals(curStudent.student_email)){ 
-		    	if(curStudent.groupid != null){
-		            pageContext.setAttribute("cur_groupid", curStudent.groupid); 	
+        Student curStudent = myModel.getStudent();
+        if(curStudent.groupid != null){
+            pageContext.setAttribute("cur_groupid", curStudent.groupid);
+            Group curGroup = myModel.getGroup();
+            pageContext.setAttribute("group_id", curGroup.groupid);
+            pageContext.setAttribute("group_instructor", curGroup.instructor);
+            pageContext.setAttribute("group_time", curGroup.exerciese_time);
+            pageContext.setAttribute("group_place", curGroup.exercise_place);
     %>
 <p>You are in Group ${fn:escapeXml(cur_groupid)}!</p>
+<p>GroupID '${fn:escapeXml(group_id)}':</p>
+<blockquote>Instructor '${fn:escapeXml(group_instructor)}'</blockquote>
+<blockquote>Exercise Time '${fn:escapeXml(group_time)}'</blockquote>
+<blockquote>Exercise Place '${fn:escapeXml(group_place)}'</blockquote>
     <%
-                	}else{
+        }else{
     %>
-<p>You are not in any group!</p>
-    <%
-                    }
-                    found = 1;
-                    break;
-                }
+    <p>You are not in any group, please register!</p>
+        <%
+            List<Group> groups = myModel.getGroups();
+        // Run an ancestor query to ensure we see the most up-to-date
+        // view of the Groups belonging to the selected Guestbook.
+            if (groups.isEmpty()) {
+        %>
+        <p>Lecture '${fn:escapeXml(guestbookName)}' has no groups.</p>
+        <%
+            }else{
+
+                    for (Group currentGroup : groups) {    
+                        pageContext.setAttribute("group_id", currentGroup.groupid);
+                        pageContext.setAttribute("group_instructor", currentGroup.instructor);
+                        pageContext.setAttribute("group_time", currentGroup.exerciese_time);
+                        pageContext.setAttribute("group_place", currentGroup.exercise_place);
+        %>
+        <p>GroupID '${fn:escapeXml(group_id)}':</p>
+        <blockquote>Instructor '${fn:escapeXml(group_instructor)}'</blockquote>
+        <blockquote>Exercise Time '${fn:escapeXml(group_time)}'</blockquote>
+        <blockquote>Exercise Place '${fn:escapeXml(group_place)}'</blockquote>
+        <%
+                }      
             }
-    }
-    if(found == 0){
-        student = new Student(guestbookName, user.getEmail(), user.getUserId());
-        ObjectifyService.ofy().save().entity(student).now();
-    %>
-<p>You are not in any group!</p>
-    <%
         }
     } else {
 %>
 <p>Hello!
     <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Sign in</a>
-    to include your name with greetings you post.</p>
+    to include your name with groups you post.</p>
 <%
     }
-
-      List<Group> greetings = ObjectifyService.ofy()
-          .load()
-          .type(Group.class) // We want only Groups
-          .ancestor(theBook)    // Anyone in this book    // Most recent first - date is indexed.            // Only show 5 of them.
-          .list();
-    // Run an ancestor query to ensure we see the most up-to-date
-    // view of the Groups belonging to the selected Guestbook.
-    if (greetings.isEmpty()) {
-%>
-<p>Lecture '${fn:escapeXml(guestbookName)}' has no groups.</p>
-<%
-    }else{
-
-            for (Group currentGroup : greetings) {    
-                pageContext.setAttribute("group_id", currentGroup.groupid);
-                pageContext.setAttribute("group_instructor", currentGroup.instructor);
-                pageContext.setAttribute("group_time", currentGroup.exerciese_time);
-                pageContext.setAttribute("group_place", currentGroup.exercise_place);
-%>
-<p>GroupID '${fn:escapeXml(group_id)}':</p>
-<blockquote>Instructor '${fn:escapeXml(group_instructor)}'</blockquote>
-<blockquote>Exercise Time '${fn:escapeXml(group_time)}'</blockquote>
-<blockquote>Exercise Place '${fn:escapeXml(group_place)}'</blockquote>
-<%
-        }      
-}
 %>
 
+      
 <form action="/sign" method="post">
-    <div><p>GroupID</p><textarea name="groupid" rows="3" cols="60"></textarea></div>
-    <div><p>instructor</p><textarea name="instructor" rows="3" cols="60"></textarea></div>
-    <div><p>exercise time</p><textarea name="time" rows="3" cols="60"></textarea></div>
-    <div><p>exercise place</p><textarea name="place" rows="3" cols="60"></textarea></div>
-    <div><input type="submit" value="Create Group"/></div>
     <div><p>Select Group</p><input type="text" name="selectedGroup"/></div>
     <div><input type="submit" value="Register Group"/></div>
     <input type="hidden" name="guestbookName" value="${fn:escapeXml(guestbookName)}"/>
