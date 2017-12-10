@@ -68,7 +68,7 @@ public class Model extends Observable {
 		 return groups;
 	}
 	public void registerGroup(String guestbookName, User user, String groupid) {
-		Student student = new Student(guestbookName, user.getEmail(), user.getUserId(), groupid);
+		Student student = new Student(guestbookName, user.getEmail(), groupid);
         ObjectifyService.ofy().save().entity(student).now();
         setChanged();
         notifyObservers(student);

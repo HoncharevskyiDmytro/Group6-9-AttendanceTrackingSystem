@@ -43,7 +43,6 @@ public class Student {
   @Parent Key<Guestbook> theBook;
   @Id String id;
   public String student_email;
-  public String student_id;
   public String groupid; //instructor
   @Index public Date date;
 
@@ -57,23 +56,22 @@ public class Student {
   /**
    * A convenience constructor
    **/
-  public Student(String book, String student_email, String student_id) {
+  public Student(String book, String student_email) {
     this();
     if( book != null ) {
       this.theBook = Key.create(Guestbook.class, book);  // Creating the Ancestor key
     } else {
       this.theBook = Key.create(Guestbook.class, "default");
     }
-    this.student_email = student_email;
-    this.student_id = student_id;    
+    this.student_email = student_email;  
     this.id = student_email;
   }
 
   /**
    * Takes all important fields
    **/
-  public Student(String book, String student_email, String student_id, String groupid) {
-    this(book, student_email, student_id);
+  public Student(String book, String student_email, String groupid) {
+    this(book, student_email);
     this.groupid = groupid;
   }
 

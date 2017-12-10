@@ -4,7 +4,9 @@ firstSteps/FirstStepsApplication.class
 firstSteps/HelloWorldResource.class
 com/example/guestbook/Group.class
 com/example/guestbook/Student.class
+com/example/guestbook/LogoutServlet.class
 com/example/guestbook/OfyHelper.class
 com/example/guestbook/Guestbook.class
+com/example/guestbook/LoginServlet.class
 com/example/guestbook/SignGuestbookServlet.class
 com/example/guestbook/Model.class

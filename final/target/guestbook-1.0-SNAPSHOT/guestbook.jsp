@@ -63,7 +63,22 @@
 
 %>
 <p>Hello, ${fn:escapeXml(user.nickname)}! (You can
+<<<<<<< HEAD
     <a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">sign out</a>.)</p>
+=======
+    <a href="LogoutServlet">sign out</a>.)</p>
+<%
+     List<Student> curStudents = ObjectifyService.ofy()
+          .load()
+          .type(Student.class) // We want only Groups
+          .ancestor(theBook)   // Anyone in this book    // Most recent first - date is indexed.            // Only show 5 of them.
+          .list();
+
+    pageContext.setAttribute("email", user.getEmail());	    
+%>
+
+<p> ${fn:escapeXml(email)}!!</p>
+>>>>>>> refs/remotes/origin/Exercise2
     <%
         Student curStudent = myModel.getStudent();
         if(curStudent.groupid != null){
@@ -110,8 +125,13 @@
     } else {
 %>
 <p>Hello!
+<<<<<<< HEAD
     <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Sign in</a>
     to include your name with groups you post.</p>
+=======
+    <a href="login.html">Sign in</a>
+    to include your name with greetings you post.</p>
+>>>>>>> refs/remotes/origin/Exercise2
 <%
     }
 %>
