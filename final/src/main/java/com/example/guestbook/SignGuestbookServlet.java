@@ -50,7 +50,7 @@ public class SignGuestbookServlet extends HttpServlet {
   // Process the http POST of the form
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    Group greeting;
+    Group group;
     Student student;
     
     UserService userService = UserServiceFactory.getUserService();
@@ -62,13 +62,13 @@ public class SignGuestbookServlet extends HttpServlet {
     String instructor = req.getParameter("instructor");
     String place = req.getParameter("place");
     String time = req.getParameter("time");
-    if(groupID != "") {
-	    if (instructor != "" || place != "" || time != "") {
-	      greeting = new Group(guestbookName, groupID, instructor, place, time);
-		  ObjectifyService.ofy().save().entity(greeting).now();
+    if(!groupID.isEmpty()) {
+	    if (!instructor.isEmpty() || !place.isEmpty() || time.isEmpty()) {
+	      group = new Group(guestbookName, groupID, instructor, place, time);
+		  ObjectifyService.ofy().save().entity(group).now();
 	    } else {
-	      greeting = new Group(guestbookName, groupID);
-		  ObjectifyService.ofy().save().entity(greeting).now();
+	      group = new Group(guestbookName, groupID);
+		  ObjectifyService.ofy().save().entity(group).now();
 	    }
     }
     if (user != null) {
@@ -82,7 +82,7 @@ public class SignGuestbookServlet extends HttpServlet {
         }
     }
 
-    // Use Objectify to save the greeting and now() is used to make the call synchronously as we
+    // Use Objectify to save the  and now() is used to make the call synchronously as we
     // will immediately get a new page using redirect and we want the data to be present.
     
     resp.sendRedirect("/guestbook.jsp?guestbookName=" + guestbookName);

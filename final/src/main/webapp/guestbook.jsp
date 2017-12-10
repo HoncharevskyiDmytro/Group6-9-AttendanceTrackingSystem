@@ -60,22 +60,19 @@
           .ancestor(theBook)   // Anyone in this book    // Most recent first - date is indexed.            // Only show 5 of them.
           .list();
 
-	    pageContext.setAttribute("email", user.getEmail());	    
-    %>
+    pageContext.setAttribute("email", user.getEmail());	    
+%>
 
 <p> ${fn:escapeXml(email)}!!</p>
     <%
-	   // if(curStudent != null){
-    if (curStudents.isEmpty()) {	   
-	           //pageContext.setAttribute("studentemail", curStudent.student_email);	    	
+    if (curStudents.isEmpty()) {	       	
     %>
 <p> query fail!!</p>
-
     <%   
      }else{
 
             for (Student curStudent : curStudents) {    
-                if(e.equals(curStudent.student_email)){ 
+                if(user.getEmail().equals(curStudent.student_email)){ 
 			    	if(curStudent.groupid != null){
 			          pageContext.setAttribute("cur_groupid", curStudent.groupid); 	
     %>
@@ -130,11 +127,13 @@
     <div><p>instructor</p><textarea name="instructor" rows="3" cols="60"></textarea></div>
     <div><p>exercise time</p><textarea name="time" rows="3" cols="60"></textarea></div>
     <div><p>exercise place</p><textarea name="place" rows="3" cols="60"></textarea></div>
+    <div><input type="submit" value="Create Group"/></div>
     <div><p>Select Group</p><input type="text" name="selectedGroup"/></div>
-    <div><input type="submit" value="Post Group"/></div>
+    <div><input type="submit" value="Register Group"/></div>
     <input type="hidden" name="guestbookName" value="${fn:escapeXml(guestbookName)}"/>
-
 </form>
+
+
 <%-- //[END datastore]--%>
 <form action="/guestbook.jsp" method="get">
     <div><input type="text" name="guestbookName" value="${fn:escapeXml(guestbookName)}"/></div>
