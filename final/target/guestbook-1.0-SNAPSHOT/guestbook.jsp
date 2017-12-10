@@ -52,7 +52,7 @@
 
 %>
 <p>Hello, ${fn:escapeXml(user.nickname)}! (You can
-    <a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">sign out</a>.)</p>
+    <a href="LogoutServlet">sign out</a>.)</p>
 <%
      List<Student> curStudents = ObjectifyService.ofy()
           .load()
@@ -60,8 +60,8 @@
           .ancestor(theBook)   // Anyone in this book    // Most recent first - date is indexed.            // Only show 5 of them.
           .list();
 
-	    pageContext.setAttribute("email", user.getEmail());	    
-    %>
+    pageContext.setAttribute("email", user.getEmail());	    
+%>
 
 <p> ${fn:escapeXml(email)}!!</p>
     <%
@@ -89,7 +89,7 @@
     } else {
 %>
 <p>Hello!
-    <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Sign in</a>
+    <a href="login.html">Sign in</a>
     to include your name with greetings you post.</p>
 <%
     }

@@ -27,11 +27,15 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import java.util.List;
 
 
@@ -53,8 +57,8 @@ public class SignGuestbookServlet extends HttpServlet {
     Group group;
     Student student;
     
-    UserService userService = UserServiceFactory.getUserService();
-    User user = userService.getCurrentUser();  // Find out who the user is.
+    //UserService userService = UserServiceFactory.getUserService();
+    //User user = userService.getCurrentUser();  // Find out who the user is.
 
     String groupID = req.getParameter("groupid");
     String guestbookName = req.getParameter("guestbookName");
@@ -73,11 +77,7 @@ public class SignGuestbookServlet extends HttpServlet {
     }
     if (user != null) {
         if(selectedGroup != "") {
-			student = new Student(guestbookName, user.getEmail(), user.getUserId(), selectedGroup);
-	        ObjectifyService.ofy().save().entity(student).now();
-        }
-        else {
-			student = new Student(guestbookName, user.getEmail(), user.getUserId());
+			student = new Student(guestbookName, user.getEmail(),  selectedGroup);
 	        ObjectifyService.ofy().save().entity(student).now();
         }
     }
@@ -87,5 +87,38 @@ public class SignGuestbookServlet extends HttpServlet {
     
     resp.sendRedirect("/guestbook.jsp?guestbookName=" + guestbookName);
   }
+  
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)  
+          throws ServletException, IOException {  
+
+    String guestbookName = request.getParameter("guestbookName");
+    com.googlecode.objectify.Key<Guestbook> theBook = com.googlecode.objectify.Key.create(Guestbook.class, guestbookName);
+    Student student;
+    int found = 0;
+    
+	HttpSession session=request.getSession(false);  
+	if(session!=null){  
+		String name=(String)session.getAttribute("name");  
+		 List<Student> curStudents = ObjectifyService.ofy()
+		          .load()
+		          .type(Student.class) // We want only Groups
+		          .ancestor(theBook)   // Anyone in this book    // Most recent first - date is indexed.            // Only show 5 of them.
+		          .list();
+		 if (!curStudents.isEmpty()) {	 
+			 for (Student curStudent : curStudents) {    
+	                if(name.equals(curStudent.student_email)){ 
+	                		found = 1;
+	                		break;
+	                }
+			 }
+		 }
+		 if(found == 0) {
+			student = new Student(guestbookName, name);
+	        ObjectifyService.ofy().save().entity(student).now();
+		 }	
+	}  
+	 response.sendRedirect("/guestbook.jsp?guestbookName=" + guestbookName);
+}
+
 }
 //[END all]

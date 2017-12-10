@@ -45,14 +45,14 @@
 
     com.googlecode.objectify.Key<Guestbook> theBook = com.googlecode.objectify.Key.create(Guestbook.class, guestbookName);
 
-    UserService userService = UserServiceFactory.getUserService();
-    User user = userService.getCurrentUser();
-    if (user != null) {
+    HttpSession session=request.getSession(false);  
+    if(session!=null){  
+        String name=(String)session.getAttribute("name");  
         pageContext.setAttribute("user", user);
 
 %>
 <p>Hello, ${fn:escapeXml(user.nickname)}! (You can
-    <a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">sign out</a>.)</p>
+    <a href="LogoutServlet">sign out</a>.)</p>
 <%
      List<Student> curStudents = ObjectifyService.ofy()
           .load()
@@ -89,7 +89,7 @@
     } else {
 %>
 <p>Hello!
-    <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Sign in</a>
+    <a href="login.html">Sign in</a>
     to include your name with greetings you post.</p>
 <%
     }
